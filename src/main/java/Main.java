@@ -1,11 +1,12 @@
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
+import org.w3c.dom.traversal.NodeIterator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 
 public class Main {
 
@@ -26,9 +27,17 @@ public class Main {
                 writer.println();
 
                 for (Element verse : lyrics.elements()) {
-                    String lines = verse.element("lines").asXML();
-                    lines = lines.substring(58, lines.length()-8).replaceAll("<br/>", "\n");
-                    writer.println(lines);
+                    Element lines = verse.element("lines");
+                    Iterator<Node> iterator = lines.nodeIterator();
+
+                    while(iterator.hasNext()) {
+                        Node n = iterator.next();
+
+                        // NodeType=3 is text, and NodeType=1 is a line break <br/>
+                        if(n.getNodeType() == 3)
+                            writer.println(n.getText());
+                    }
+
                     writer.println();
                 }
 
